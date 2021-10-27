@@ -1,4 +1,3 @@
-from django.shortcuts import render, get_object_or_404
 from rest_framework.serializers import Serializer
 from .serializers import ProjectSerializer
 from rest_framework.views import APIView
@@ -11,7 +10,7 @@ from .forms import ProjectCreateForm
 
 # Create your views here.
 
-class ProjectsListView(APIView):
+class ProjectsListView(LoginRequiredMixin, APIView):
     """
     List all projects, or create a new project.
     """
@@ -28,7 +27,7 @@ class ProjectsListView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ProjectDetailView(APIView):
+class ProjectDetailView(LoginRequiredMixin, APIView):
     """
     Retrieve, update or delete a project.
     """
@@ -63,7 +62,11 @@ class ProjectDetailView(APIView):
         obj.delete()
         return Response({"message": "Project deleted"}, status=status.HTTP_200_OK)
 
-class ProjectCreateView(APIView):
+class ProjectCreateView(LoginRequiredMixin, APIView):
+    """
+    Create a new project.
+    """
+
     def post(self, request):
         form = ProjectCreateForm(request.POST)
         if form.is_valid():
